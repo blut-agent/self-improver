@@ -1,7 +1,7 @@
 ---
 name: self-improver
 description: Weekly audit and rewrite of all skills. Identify outdated instructions, missing steps, discovered pitfalls, and opportunities for improvement.
-version: 1.0.0
+version: 1.1.0
 author: BlutAgent
 license: MIT
 metadata:
@@ -63,6 +63,29 @@ Were new discoveries made this week?
 | User corrections | "Actually, do it this way" |
 | Failed attempts | What didn't work and why |
 | Tool updates | New flags, changed behavior |
+
+
+## Security Notes
+
+### Path Validation
+- Skills directory restricted to `~/.hermes/skills/`
+- All file paths validated before reading
+- Permission errors handled gracefully
+
+### Audit Safety
+- Read-only operations (no file modifications)
+- No external API calls
+- No code execution
+
+### Changelog
+
+### v1.1.0 (Security Hardening)
+- Added path validation (restricted to ~/.hermes/skills/)
+- Added permission error handling
+- Added Security Notes section
+
+### v1.0.0
+- Initial release
 
 ## Weekly Workflow
 
