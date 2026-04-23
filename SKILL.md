@@ -1,7 +1,7 @@
 ---
 name: self-improver
 description: Weekly audit and rewrite of all skills. Identify outdated instructions, missing steps, discovered pitfalls, and opportunities for improvement.
-version: 1.1.0
+version: 1.1.1
 author: BlutAgent
 license: MIT
 metadata:
@@ -187,7 +187,7 @@ Save as `~/.hermes/skills/software-development/self-improver/scripts/audit_skill
 #!/usr/bin/env python3
 """Weekly skill audit — find outdated skills and suggest improvements."""
 
-import os, sys, json
+import os, sys, json, re
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -246,6 +246,26 @@ def check_completeness(content):
             issues.append(f"Missing section: {section}")
     return issues
 
+
+def check_security(content):
+    """Check for security hardening patterns."""
+    issues = []
+    
+    # Check for file validation
+    if 'open(sys.argv' in content and 'validate_file_path' not in content:
+        issues.append("SECURITY: File input without validation")
+    
+    # Check for endpoint validation  
+    if "gh_api(f\"" in content and 'validate_endpoint' not in content:
+        issues.append("SECURITY: API endpoint interpolation without validation")
+    
+    # Check for owner/repo validation
+    if re.search(r'f"/repos/\{[^}]+\}/\{[^}]+\}', content):
+        if 'validate_owner_repo' not in content:
+            issues.append("SECURITY: Owner/repo interpolation without validation")
+    
+    return issues
+
 def audit_skill(path):
     """Run full audit on a skill."""
     content = read_skill(path)
@@ -255,6 +275,7 @@ def audit_skill(path):
     issues.extend(check_api_endpoints(content))
     issues.extend(check_paths(content))
     issues.extend(check_completeness(content))
+    issues.extend(check_security(content))
     
     return {
         'path': str(path),
