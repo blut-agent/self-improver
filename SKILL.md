@@ -1,13 +1,23 @@
 ---
 name: self-improver
 description: Weekly audit and rewrite of all skills. Identify outdated instructions, missing steps, discovered pitfalls, and opportunities for improvement.
-version: 1.1.1
+version: 1.0.0
 author: BlutAgent
 license: MIT
 metadata:
   hermes:
     tags: [skills, improvement, audit, meta, maintenance]
-    related_skills: [skill-management, writing-plans]
+    related_skills: [skill-management, writing-plans, skill-graph]
+  manifest:
+    always_load:
+      - CANONICAL.md
+      - context/identity.md
+      - skill-graph/SKILL.md
+    context:
+      - context/user.md
+      - context/manifest.yaml
+    references:
+      - SOUL.md
 ---
 
 # Self Improver
@@ -64,28 +74,34 @@ Were new discoveries made this week?
 | Failed attempts | What didn't work and why |
 | Tool updates | New flags, changed behavior |
 
+### 5. Graph-Native Audit (from skill-graph architecture)
 
-## Security Notes
+Is the skill properly integrated into the skill graph?
 
-### Path Validation
-- Skills directory restricted to `~/.hermes/skills/`
-- All file paths validated before reading
-- Permission errors handled gracefully
+| Check | Method |
+|-------|--------|
+| Manifest declared? | Check for `always_load`, `context`, `references` in YAML frontmatter |
+| Context separation? | Are identity/voice separate from methodology? |
+| Related skills linked? | Check `related_skills` field is non-empty and accurate |
+| Follows five-step workflow? | Plan → Clarify → Load → Execute → Verify pattern present? |
+| Four principles applied? | Simplicity, root cause, elegance, verification referenced? |
+| One complete thought? | Does the skill cover one domain thoroughly (not two shallowly)? |
+| Framework vs. skill? | Is this truly a domain methodology, or a cross-cutting framework? |
+| Changelog present? | Version history tracked at bottom of file? |
+| No stale context? | Business-specific details in context layer, not hardcoded in skill? |
+| Graph edges valid? | Do `related_skills` actually exist? Do context files actually exist? |
 
-### Audit Safety
-- Read-only operations (no file modifications)
-- No external API calls
-- No code execution
+### 6. Agent-Native Design Check
 
-### Changelog
+Is the skill built for how agents navigate?
 
-### v1.1.0 (Security Hardening)
-- Added path validation (restricted to ~/.hermes/skills/)
-- Added permission error handling
-- Added Security Notes section
-
-### v1.0.0
-- Initial release
+| Check | Method |
+|-------|--------|
+| Progressive disclosure? | Agent reads manifest first, knows what to load? |
+| Small composable pieces? | File is one complete thought, not a mega-document? |
+| Clear metadata? | Tags, triggers, boundaries make discovery easy? |
+| Portable format? | Would this work across Claude Code, Cursor, Codex, etc.? |
+| No hidden dependencies? | All needed files referenced in manifest? |
 
 ## Weekly Workflow
 
@@ -120,6 +136,11 @@ For each skill:
 - [ ] Command X deprecated
 - [ ] Missing error handling for Y
 - [ ] Path Z incorrect on Linux
+- [ ] Missing manifest (always_load/context/references)
+- [ ] Context not separated (business details hardcoded in skill)
+- [ ] No changelog section
+- [ ] related_skills empty or inaccurate
+- [ ] No five-step workflow section
 
 ### Lessons to Capture
 - Discovered: ...
@@ -172,8 +193,18 @@ skill_manage(action='patch', name='skill-name',
 | Skill | Issue | Priority |
 |-------|-------|----------|
 | pr-analyst | Missing error handling | High |
-| morning-brief | CI status check flaky | Medium |
 
+## Graph Health
+
+| Metric | Count |
+|--------|-------|
+| Skills with manifests | N / Total |
+| Context files healthy | ✓ / ✗ |
+| Orphan skills (no related_skills) | N |
+| Skills missing changelogs | N |
+| Graph edges broken (dead references) | N |
+
+## Next Week's Focus
 ## Next Week's Focus
 - Complete pr-analyst error handling
 - Investigate morning-brief CI reliability
@@ -246,6 +277,28 @@ def check_completeness(content):
             issues.append(f"Missing section: {section}")
     return issues
 
+def check_security(content):
+    """Check for security hardening patterns."""
+    issues = []
+    
+    # Check for file validation
+    if 'open(sys.argv' in content and 'validate_file_path' not in content:
+        issues.append("SECURITY: File input without validation")
+    
+    # Check for endpoint validation
+    if "gh_api(f\"" in content and 'validate_endpoint' not in content:
+        issues.append("SECURITY: API endpoint interpolation without validation")
+    
+    # Check for owner/repo validation
+    if re.search(r'f"/repos/\{[^}]+\}/\{[^}]+\}', content):
+def check_completeness(content):
+    """Check for missing sections."""
+    issues = []
+    required = ['When to Use', 'Workflow', 'Commands Required']
+    for section in required:
+        if section.lower() not in content.lower():
+            issues.append(f"Missing section: {section}")
+    return issues
 
 def check_security(content):
     """Check for security hardening patterns."""
@@ -255,7 +308,7 @@ def check_security(content):
     if 'open(sys.argv' in content and 'validate_file_path' not in content:
         issues.append("SECURITY: File input without validation")
     
-    # Check for endpoint validation  
+    # Check for endpoint validation
     if "gh_api(f\"" in content and 'validate_endpoint' not in content:
         issues.append("SECURITY: API endpoint interpolation without validation")
     
@@ -263,6 +316,10 @@ def check_security(content):
     if re.search(r'f"/repos/\{[^}]+\}/\{[^}]+\}', content):
         if 'validate_owner_repo' not in content:
             issues.append("SECURITY: Owner/repo interpolation without validation")
+    
+    # Check for Security Notes section
+    if '## Security Notes' not in content and 'import' in content.lower():
+        issues.append("MISSING: Security Notes section")
     
     return issues
 
@@ -429,3 +486,15 @@ Skills are living documents — they decay without care
 ```
 
 **Self Improver ensures skills stay accurate, complete, and useful.**
+
+## Changelog
+
+### v1.2.0 (2026-04-24)
+- Added graph-native audit criteria (manifest checks, context separation, five-step workflow)
+- Added agent-native design checks (progressive disclosure, portability, metadata)
+- Added graph health metrics to report template
+- Added manifest section (always_load: CANONICAL.md, identity.md, skill-graph; context: user.md)
+- Linked to skill-graph skill
+
+### v1.0.0 (2026-04-22)
+- Initial release: accuracy, completeness, clarity, lessons-captured audit criteria
