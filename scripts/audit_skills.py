@@ -52,7 +52,7 @@ def check_api_endpoints(content):
 
 def check_paths(content):
     issues = []
-    if '/Users/' in content:
+    if '/Users/' in content or '/home/' in content:
         issues.append("macOS-specific path found — add Linux/Windows alternative")
     if 'C:\\' in content:
         issues.append("Windows-specific path found — add macOS/Linux alternative")

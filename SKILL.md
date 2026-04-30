@@ -261,7 +261,7 @@ def check_api_endpoints(content):
 def check_paths(content):
     """Find hardcoded paths that might be OS-specific."""
     issues = []
-    if '/Users/' in content:
+    if '/Users/' in content or '/home/' in content:
         issues.append("macOS-specific path found — add Linux/Windows alternative")
     if 'C:\\\\' in content:
         issues.append("Windows-specific path found — add macOS/Linux alternative")
@@ -509,7 +509,7 @@ Skills are living documents — they decay without care
 - Fixed duplicate `check_completeness`/`check_security` functions in self-improver's embedded Python script
 - Fixed incomplete `if` statement in self-improver audit script
 - Fixed duplicate "## Next Week's Focus" header in self-improver
-- Made generic the `edgardo` reference in self-improver lessons learned
+- Made generic the user reference in self-improver lessons learned
 - Copied all modified skills to hermes-agent repo and committed (push failed — user needs to handle)
 
 ## Changelog
